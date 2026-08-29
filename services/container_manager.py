@@ -277,7 +277,16 @@ class ContainerOrchestrator:
                         'ctf.session_id': session_id
                     },
                     restart_policy={'Name': 'no'},
-                    remove=False
+                    remove=False,
+
+                    # --- ADD SECURITY HARDENING & RESOURCE LIMITS BELOW ---
+                    mem_limit="128m",                          # Hard limit RAM to 128MB
+                    memswap_limit="128m",                      # Disable swap space
+                    nano_cpus=500_000_000,                     # Cap CPU at 0.5 cores (50%)
+                    pids_limit=100,                            # Limit max processes (prevents fork bombs)
+                    cap_drop=["ALL"],                          # Drop all Linux capabilities
+                    read_only=True,                            # Make container root filesystem read-only
+                    tmpfs={'/tmp': 'rw,noexec,nosuid,size=32m'} # Writable temporary mount for dynamic files/sockets
                 )
                 
                 # Update instance with actual container ID and running status
